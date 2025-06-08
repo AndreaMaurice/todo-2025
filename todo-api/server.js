@@ -6,15 +6,14 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors()); // Enable CORS for all routes
-app.use(express.json()); // Body parser for JSON data
+app.use(cors()); 
+app.use(express.json()); 
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB Connected...'))
     .catch(err => console.error(err));
 
-// Define a simple schema and model for data
 const TodoSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -47,42 +46,39 @@ app.get('/api/todos', async (req, res) => {
     }
 });
 
-//get a todo - in progress
-// Get a single todo by its ID
-app.get('/api/todos/:id', async (req, res) => { // Changed to /api/todos/:id
+//get a todo
+app.get('/api/todos/:id', async (req, res) => { 
     try {
-        const todo = await Todo.findById(req.params.id); // Use req.params.id
+        const todo = await Todo.findById(req.params.id); 
         if (!todo) {
             return res.status(404).json({ msg: 'Todo not found' });
         }
         res.json(todo);
     } catch (err) {
         console.error(err.message);
-        // Important: Handle invalid ObjectId format (e.g., if ID is not a valid Mongo ObjectId string)
         if (err.kind === 'ObjectId') {
-            return res.status(400).json({ msg: 'Invalid Todo ID format' }); // Use 400 for bad request
+            return res.status(400).json({ msg: 'Invalid Todo ID format' }); 
         }
         res.status(500).send('Server Error');
     }
 });
 
 // Create new todo
-app.post('/api/todos', async (req, res) => { // Changed endpoint to be RESTful
-    const { title, content } = req.body; // Only expecting title and content
+app.post('/api/todos', async (req, res) => { 
+    const { title, content } = req.body; 
 
-    if (!title || !content) { // Only validate what's expected from client
+    if (!title || !content) { 
         return res.status(400).json({ msg: 'Please enter title and content' });
     }
 
     const newTodo = new Todo({
         title,
         content,
-        // completed and createdOn will use their default values from the schema
     });
 
     try {
-        const data = await newTodo.save(); // Mongoose generates _id upon save
-        res.status(201).json(data); // 201 Created is appropriate for successful creation
+        const data = await newTodo.save(); 
+        res.status(201).json(data); 
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
@@ -90,12 +86,11 @@ app.post('/api/todos', async (req, res) => { // Changed endpoint to be RESTful
 });
 
 // update
-// Update todo
-app.put('/api/todos/:id', async (req, res) => { // Changed endpoint
-    const { title, content, completed } = req.body; // Allow for updating completed too
-    const todoId = req.params.id; // Get ID from URL parameter
+app.put('/api/todos/:id', async (req, res) => { 
+    const { title, content, completed } = req.body; 
+    const todoId = req.params.id; 
 
-    if (!todoId) { // Check if ID is provided in URL
+    if (!todoId) {
         return res.status(400).json({ msg: 'Please provide a todo ID in the URL' });
     }
 
@@ -107,8 +102,8 @@ app.put('/api/todos/:id', async (req, res) => { // Changed endpoint
 
         const todo = await Todo.findByIdAndUpdate(
             todoId,
-            { $set: updatedFields }, // Use $set to update only provided fields
-            { new: true, runValidators: true } // `new: true` returns the updated doc, `runValidators` runs schema validators
+            { $set: updatedFields }, 
+            { new: true, runValidators: true }
         );
 
         if (!todo) {
@@ -124,10 +119,9 @@ app.put('/api/todos/:id', async (req, res) => { // Changed endpoint
     }
 });
 
-// @route   DELETE /api/todos/:id
-// @desc    Delete a todo by ID
+// delete
 app.delete('/api/todos/:id', async (req, res) => {
-    const todoId = req.params.id; // Get ID from URL parameter
+    const todoId = req.params.id;
 
     if (!todoId) {
         return res.status(400).json({ msg: 'Please provide a todo ID in the URL' });
@@ -138,7 +132,6 @@ app.delete('/api/todos/:id', async (req, res) => {
         if (!todo) {
             return res.status(404).json({ msg: 'Todo not found' });
         }
-        // CORRECTED: Return the ID that was deleted
         res.json({ msg: 'Todo deleted successfully', id: todoId });
     } catch (err) {
         console.error(err.message);

@@ -77,9 +77,13 @@ const createNewTask = () => {
                         <input
                           type="checkbox"
                           checked={todo.completed}
-                          onChange={() => {
-                            dispatch(updateExistingTodo({ ...todo, completed: !todo.completed }));
-                          }}
+                          onChange={async () => {
+                                    try {
+                                      await dispatch(updateExistingTodo({ ...todo, completed: !todo.completed })).unwrap();
+                                    } catch (err) {
+                                      console.error('Failed to update todo:', err);
+                                    }
+                                  }}
                           className="w-4 h-4 accent-blue-600 rounded-md border-gray-300 border-2 focus:ring-2 focus:ring-blue-400 transition"
                         />
                       </label>
