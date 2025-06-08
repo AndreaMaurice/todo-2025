@@ -30,14 +30,14 @@
    ```
     git clone https://github.com/AndreaMaurice/todo-2025
    ```
-2. Open <todo-api> and <todo-frontend> on separate windows
+2. Open todo-api and todo-frontend on separate windows
    
 3. Install the dependencies
    ```
    npm install
    ```
 
-### For <todo-api>
+### For todo-api
 4. Create a .env file
    ```
    PORT=5000
@@ -49,7 +49,7 @@
    ```
    Server should start on http://localhost:5000
 
-### For <todo-frontend>
+### For todo-frontend
 4. Start the project
    ```
    npm run dev
